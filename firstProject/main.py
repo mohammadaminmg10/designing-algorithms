@@ -13,5 +13,4 @@ player_path = [
 ]
 
 playground = initialize_matrix(playground)
-
 print(calculate_gold(playground, player_path))

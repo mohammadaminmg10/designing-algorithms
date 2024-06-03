@@ -1,11 +1,10 @@
 def initialize_matrix(matrix_input):
     for i, row in enumerate(matrix_input):
         matrix_input[i] = [int(item) if item.isdigit() else item for item in row]
-
     return matrix_input
 
 
-def handle_bandits(matrix, i, j, bandit_tracker):
+def handle_bandits(matrix, i, j, prev_bandit):
     """
     Handles the bandit logic for the given cell.
 
@@ -13,18 +12,17 @@ def handle_bandits(matrix, i, j, bandit_tracker):
     matrix (list of list of int/str): The n x n matrix.
     i (int): The row index.
     j (int): The column index.
-    bandit_tracker (list of list of bool): The bandit presence tracker.
+    prev_bandit (bool): Whether the previous cell had a bandit.
 
     Returns:
     int: The penalty (negative gold) due to bandits.
+    bool: Whether the current cell has a bandit.
     """
-    if i > 0 and matrix[i - 1][j] == '!':
-        bandit_tracker[i][j] = not bandit_tracker[i - 1][j]
-    if j > 0 and matrix[i][j - 1] == '!':
-        bandit_tracker[i][j] = not bandit_tracker[i][j - 1]
-    if bandit_tracker[i][j] and isinstance(matrix[i][j], int):
-        return -matrix[i][j]
-    return 0
+    if prev_bandit and isinstance(matrix[i][j], int):
+        return -matrix[i][j], False
+    if matrix[i][j] == '!':
+        return 0, True
+    return 0, False
 
 
 def is_valid_move(matrix, i, j, prev_i, prev_j):
@@ -57,12 +55,12 @@ def calculate_gold(matrix, path):
     int: The total gold collected.
     """
     total_gold = 0
-    bandit_tracker = [[False] * len(matrix) for _ in range(len(matrix))]
+    prev_bandit = False  # Keeps track if the previous cell had a bandit
 
-    for idx, (i, j) in enumerate(path):
+    for (i, j) in path:
         if matrix[i][j] == 'X':
             continue
-        penalty = handle_bandits(matrix, i, j, bandit_tracker)
+        penalty, prev_bandit = handle_bandits(matrix, i, j, prev_bandit)
         if isinstance(matrix[i][j], int):
             total_gold += matrix[i][j] + penalty
 
