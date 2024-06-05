@@ -62,7 +62,7 @@ def calculate_gold(matrix, path):
             continue
         penalty, prev_bandit = handle_bandits(matrix, i, j, prev_bandit)
         if isinstance(matrix[i][j], int):
-            total_gold += matrix[i][j] + penalty
+            total_gold += matrix[i][j] + (penalty*2)
 
     return total_gold
 
