@@ -62,13 +62,63 @@ def calculate_gold(matrix, path):
             continue
         penalty, prev_bandit = handle_bandits(matrix, i, j, prev_bandit)
         if isinstance(matrix[i][j], int):
-            total_gold += matrix[i][j] + (penalty*2)
+            total_gold += matrix[i][j] + (penalty * 2)
+
+    return total_gold
+
+
+def dynamic_collect_gold(matrix, i=0, j=0, prev_bandit=False, memo=None):
+    if memo is None:
+        memo = {}
+    n = len(matrix)
+
+    # Base case: If out of bounds or blocked cell
+    if i >= n or j >= n or matrix[i][j] == 'X':
+        return float('-inf')
+
+    # Base case: If reached the bottom-right corner
+    if i == n - 1 and j == n - 1:
+        if isinstance(matrix[i][j], int):
+            return matrix[i][j]
+        else:
+            return 0
+
+    # Check if the subproblem has been solved
+    if (i, j, prev_bandit) in memo:
+        return memo[(i, j, prev_bandit)]
+
+    # Handle the current cell's bandit logic
+    penalty, current_bandit = handle_bandits(matrix, i, j, prev_bandit)
+
+    # Calculate gold for current cell
+    if isinstance(matrix[i][j], int):
+        current_gold = matrix[i][j]
+    else:
+        current_gold = 0
+
+    # Recur for the right and down moves
+    gold_right = dynamic_collect_gold(matrix, i, j + 1, current_bandit, memo)
+    gold_down = dynamic_collect_gold(matrix, i + 1, j, current_bandit, memo)
+
+    # Apply the penalty to the gold from the next move
+    most_next_gold = max(gold_right, gold_down)
+    if current_bandit and most_next_gold != float('-inf'):
+        most_next_gold -= penalty
+
+    # Calculate the total gold for the current cell
+    total_gold = current_gold + most_next_gold
+
+    # Adjust the gold for bandit penalties
+    if current_bandit and total_gold != float('-inf'):
+        next_cell_value = matrix[i + 1][j] if i < n - 1 else matrix[i][j + 1]
+        if isinstance(next_cell_value, int):
+            total_gold -= next_cell_value
+
+    # Store the result in memoization dictionary
+    memo[(i, j, prev_bandit)] = total_gold
 
     return total_gold
 
 
 def greedy_collect_gold(matrix):
-    pass
-
-def dp_collect_gold(matrix):
     pass
