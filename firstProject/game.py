@@ -121,4 +121,56 @@ def dynamic_collect_gold(matrix, i=0, j=0, prev_bandit=False, memo=None):
 
 
 def greedy_collect_gold(matrix):
-    pass
+    """
+    Calculates the maximum gold that can be collected by following a greedy strategy.
+
+    Args:
+    `matrix` (list of list of int/str): The n x n matrix.
+
+    Returns:
+    `int`: The maximum gold that can be collected. Returns `-1` if the greedy strategy is not possible.
+    """
+    n = len(matrix)
+    i, j = 0, 0
+    total_gold = 0
+    prev_bandit = False
+
+    # Handle the starting cell (0, 0)
+    penalty, prev_bandit = handle_bandits(matrix, i, j, prev_bandit)
+    if isinstance(matrix[i][j], int):
+        total_gold += matrix[i][j] + penalty
+
+    while i < n - 1 or j < n - 1:
+        down_gold = right_gold = float('-inf')
+        next_move = None
+
+        # Check the down move
+        if i + 1 < n and matrix[i + 1][j] != 'X':
+            penalty, next_bandit_down = handle_bandits(matrix, i + 1, j, prev_bandit)
+            down_gold = (matrix[i + 1][j] if isinstance(matrix[i + 1][j], int) else 0) + (penalty*2)
+            down_move = (i + 1, j)
+        
+        # Check the right move
+        if j + 1 < n and matrix[i][j + 1] != 'X':
+            penalty, next_bandit_right = handle_bandits(matrix, i, j + 1, prev_bandit)
+            right_gold = (matrix[i][j + 1] if isinstance(matrix[i][j + 1], int) else 0) + (penalty*2)
+            right_move = (i, j + 1)
+
+        # Determine the best move
+        if down_gold > right_gold and down_gold > 0:
+            next_move = down_move
+            total_gold += down_gold
+            prev_bandit = next_bandit_down
+        elif right_gold >= down_gold and right_gold > 0:
+            next_move = right_move
+            total_gold += right_gold
+            prev_bandit = next_bandit_right
+        
+        if next_move:
+            i, j = next_move
+        else:
+            # If no valid move is found, we are at an impassable point
+            total_gold = -1
+            break
+
+    return total_gold
