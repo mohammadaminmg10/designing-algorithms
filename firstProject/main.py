@@ -15,3 +15,4 @@ player_path = [
 playground = initialize_matrix(playground)
 print(calculate_gold(playground, player_path))
 print(dynamic_collect_gold(playground))
+print(greedy_collect_gold(playground))
