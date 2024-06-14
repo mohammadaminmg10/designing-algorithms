@@ -134,6 +134,7 @@ def greedy_collect_gold(matrix):
     i, j = 0, 0
     total_gold = 0
     prev_bandit = False
+    path = [(i, j)]
 
     # Handle the starting cell (0, 0)
     penalty, prev_bandit = handle_bandits(matrix, i, j, prev_bandit)
@@ -157,20 +158,31 @@ def greedy_collect_gold(matrix):
             right_move = (i, j + 1)
 
         # Determine the best move
-        if down_gold > right_gold and down_gold > 0:
+        if down_gold > right_gold:
             next_move = down_move
             total_gold += down_gold
             prev_bandit = next_bandit_down
-        elif right_gold >= down_gold and right_gold > 0:
+            path.append(down_move)
+        elif right_gold > down_gold:
             next_move = right_move
             total_gold += right_gold
             prev_bandit = next_bandit_right
-        
-        if next_move:
-            i, j = next_move
-        else:
+            path.append(right_move)
+        elif right_gold == float('-inf') and down_gold == float('-inf'):
             # If no valid move is found, we are at an impassable point
             total_gold = -1
             break
+        elif down_gold == right_gold:
+            next_move = right_move
+            total_gold += right_gold
+            prev_bandit = next_bandit_right
+            path.append(right_move)
+        
+        if next_move:
+            i, j = next_move
+        # else:
+        #     # If no valid move is found, we are at an impassable point
+        #     total_gold = -1
+        #     break
 
     return total_gold
