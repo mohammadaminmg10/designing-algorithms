@@ -121,68 +121,82 @@ def dynamic_collect_gold(matrix, i=0, j=0, prev_bandit=False, memo=None):
 
 
 def greedy_collect_gold(matrix):
-    """
-    Calculates the maximum gold that can be collected by following a greedy strategy.
-
-    Args:
-    `matrix` (list of list of int/str): The n x n matrix.
-
-    Returns:
-    `int`: The maximum gold that can be collected. Returns `-1` if the greedy strategy is not possible.
-    """
     n = len(matrix)
     i, j = 0, 0
     total_gold = 0
     prev_bandit = False
     path = [(i, j)]
+    visited = set([(i, j)])
+    backtrack_steps = []
 
-    # Handle the starting cell (0, 0)
+    def get_gold(i, j, prev_bandit):
+        if matrix[i][j] == 'X':
+            return float('-inf'), False
+        penalty, current_bandit = handle_bandits(matrix, i, j, prev_bandit)
+        if isinstance(matrix[i][j], int):
+            return matrix[i][j] + (penalty * 2), current_bandit
+        return 0, current_bandit
+
     penalty, prev_bandit = handle_bandits(matrix, i, j, prev_bandit)
     if isinstance(matrix[i][j], int):
-        total_gold += matrix[i][j] + penalty
+        total_gold += matrix[i][j] + (penalty * 2)
 
     while i < n - 1 or j < n - 1:
+        if total_gold < 0:
+            total_gold = 0
         down_gold = right_gold = float('-inf')
         next_move = None
 
-        # Check the down move
-        if i + 1 < n and matrix[i + 1][j] != 'X':
-            penalty, next_bandit_down = handle_bandits(matrix, i + 1, j, prev_bandit)
-            down_gold = (matrix[i + 1][j] if isinstance(matrix[i + 1][j], int) else 0) + (penalty*2)
-            down_move = (i + 1, j)
-        
-        # Check the right move
-        if j + 1 < n and matrix[i][j + 1] != 'X':
-            penalty, next_bandit_right = handle_bandits(matrix, i, j + 1, prev_bandit)
-            right_gold = (matrix[i][j + 1] if isinstance(matrix[i][j + 1], int) else 0) + (penalty*2)
-            right_move = (i, j + 1)
+        if i + 1 < n and (i + 1, j) not in visited:
+            down_gold, next_bandit_down = get_gold(i + 1, j, prev_bandit)
+        if j + 1 < n and (i, j + 1) not in visited:
+            right_gold, next_bandit_right = get_gold(i, j + 1, prev_bandit)
 
-        # Determine the best move
         if down_gold > right_gold:
-            next_move = down_move
-            total_gold += down_gold
-            prev_bandit = next_bandit_down
-            path.append(down_move)
+            next_move = (i + 1, j)
+            next_bandit = next_bandit_down
+            if total_gold >= 0:
+                total_gold += down_gold
+            backtrack_steps.append((i, j + 1))
         elif right_gold > down_gold:
-            next_move = right_move
-            total_gold += right_gold
-            prev_bandit = next_bandit_right
-            path.append(right_move)
-        elif right_gold == float('-inf') and down_gold == float('-inf'):
-            # If no valid move is found, we are at an impassable point
-            total_gold = -1
-            break
-        elif down_gold == right_gold:
-            next_move = right_move
-            total_gold += right_gold
-            prev_bandit = next_bandit_right
-            path.append(right_move)
-        
+            next_move = (i, j + 1)
+            next_bandit = next_bandit_right
+            if total_gold >= 0:
+                total_gold += right_gold
+            backtrack_steps.append((i + 1, j))
+        elif down_gold == right_gold and down_gold != float('-inf'):
+            next_move = (i, j + 1)
+            next_bandit = next_bandit_right
+            if total_gold >= 0:
+                total_gold += right_gold
+            backtrack_steps.append((i + 1, j))
+
         if next_move:
             i, j = next_move
-        # else:
-        #     # If no valid move is found, we are at an impassable point
-        #     total_gold = -1
-        #     break
+            path.append(next_move)
+            visited.add(next_move)
+            # total_gold += matrix[i][j] if isinstance(matrix[i][j], int) else 0
+            prev_bandit = next_bandit
+        else:
+            # Backtracking
+            backtrack_steps_i = 0
+            while backtrack_steps:
+                i, j = backtrack_steps.pop()
+                backtrack_steps_i += 1
+                if (i, j) not in visited:
+                    break
+            else:
+                return -1  # No possible path
+
+            while backtrack_steps_i > 0:
+                path.pop()
+                backtrack_steps_i -= 1
+            path.append((i, j))
+            visited.add((i, j))
+            total_gold = calculate_gold(matrix, path)
+            prev_bandit = False
+            for pos in path: # فقط نیازه که خونه آخر چک بشه
+                if matrix[pos[0]][pos[1]] == '!':
+                    prev_bandit = True
 
     return total_gold
