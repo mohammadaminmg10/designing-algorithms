@@ -195,8 +195,9 @@ def greedy_collect_gold(matrix):
             visited.add((i, j))
             total_gold = calculate_gold(matrix, path)
             prev_bandit = False
-            for pos in path: # فقط نیازه که خونه آخر چک بشه
-                if matrix[pos[0]][pos[1]] == '!':
-                    prev_bandit = True
+            last_cell = path[-1]
+            if matrix[last_cell[0]][last_cell[1]] == '!':
+                prev_bandit = True
+
 
     return total_gold
