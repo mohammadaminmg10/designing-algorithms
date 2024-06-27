@@ -4,6 +4,7 @@ from firstProject.game import is_valid_move, handle_bandits, calculate_gold, dyn
     initialize_matrix
 
 
+# add more complex unit tests and also the main matrix from the main project
 class TestGoldCollection(unittest.TestCase):
 
     def setUp(self):
@@ -20,9 +21,9 @@ class TestGoldCollection(unittest.TestCase):
             [1 ,  2, 'X',  5]
         ]
         self.matrix_3 = [
-            [1, 2, 3],
+            [1, 2, 30],
             [4, '!', 6],
-            [7, 8, 9]
+            [70, 8, 9]
         ]
 
     def test_initialize_matrix(self):
@@ -61,7 +62,7 @@ class TestGoldCollection(unittest.TestCase):
     def test_dynamic_collect_gold(self):
         expected_output_1 = (16, [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3), (3, 3)])
         expected_output_2 = (9, [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3)])
-        expected_output_3 = (29, [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)])
+        expected_output_3 = (92, [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)])
 
         result_1 = dynamic_collect_gold(self.matrix_1)
         result_2 = dynamic_collect_gold(self.matrix_2)
@@ -74,7 +75,7 @@ class TestGoldCollection(unittest.TestCase):
     def test_greedy_collect_gold(self):
         self.assertEqual(greedy_collect_gold(self.matrix_1), (17, [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (3, 2), (3, 3)]))
         self.assertEqual(greedy_collect_gold(self.matrix_2), (9, [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3)]))
-        self.assertEqual(greedy_collect_gold(self.matrix_3), (29, [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]))
+        self.assertEqual(greedy_collect_gold(self.matrix_3), (92, [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]))
 
 
 if __name__ == '__main__':
