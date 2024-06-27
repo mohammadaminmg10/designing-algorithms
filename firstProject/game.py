@@ -1,3 +1,4 @@
+
 def initialize_matrix(matrix_input):
     for i, row in enumerate(matrix_input):
         matrix_input[i] = [int(item) if item.isdigit() else item for item in row]
@@ -67,57 +68,56 @@ def calculate_gold(matrix, path):
     return total_gold
 
 
-def dynamic_collect_gold(matrix, i=0, j=0, prev_bandit=False, memo=None):
-    if memo is None:
-        memo = {}
+def dynamic_collect_gold(matrix):
     n = len(matrix)
 
-    # Base case: If out of bounds or blocked cell
-    if i >= n or j >= n or matrix[i][j] == 'X':
-        return float('-inf')
+    # Initialize dp and path matrices
+    dp = [[0] * n for _ in range(n)]
+    path = [[[] for _ in range(n)] for _ in range(n)]
 
-    # Base case: If reached the bottom-right corner
-    if i == n - 1 and j == n - 1:
-        if isinstance(matrix[i][j], int):
-            return matrix[i][j]
-        else:
-            return 0
+    # Initialize the starting point
+    dp[0][0] = matrix[0][0] if isinstance(matrix[0][0], int) else 0
+    path[0][0] = [(0, 0)]  # Start with the starting cell in the path
 
-    # Check if the subproblem has been solved
-    if (i, j, prev_bandit) in memo:
-        return memo[(i, j, prev_bandit)]
+    # Fill dp and path arrays
+    for i in range(n):
+        for j in range(n):
+            if i == 0 and j == 0:
+                continue  # Skip the starting point since it's already initialized
 
-    # Handle the current cell's bandit logic
-    penalty, current_bandit = handle_bandits(matrix, i, j, prev_bandit)
+            if isinstance(matrix[i][j], int):
+                # Calculate max gold collected to reach (i, j) from (i-1, j) or (i, j-1)
+                max_gold_from_above = dp[i - 1][j] if i > 0 else float('-inf')
+                max_gold_from_left = dp[i][j - 1] if j > 0 else float('-inf')
 
-    # Calculate gold for current cell
-    if isinstance(matrix[i][j], int):
-        current_gold = matrix[i][j]
-    else:
-        current_gold = 0
+                if max_gold_from_above > max_gold_from_left:
+                    dp[i][j] = max_gold_from_above + matrix[i][j]
+                    path[i][j] = path[i - 1][j] + [(i, j)]
+                else:
+                    dp[i][j] = max_gold_from_left + matrix[i][j]
+                    path[i][j] = path[i][j - 1] + [(i, j)]
 
-    # Recur for the right and down moves
-    gold_right = dynamic_collect_gold(matrix, i, j + 1, current_bandit, memo)
-    gold_down = dynamic_collect_gold(matrix, i + 1, j, current_bandit, memo)
+            elif matrix[i][j] == '!':
+                # Handle bandit, just propagate the previous maximum without adding any gold penalty
+                max_gold_from_above = dp[i - 1][j] if i > 0 else float('-inf')
+                max_gold_from_left = dp[i][j - 1] if j > 0 else float('-inf')
 
-    # Apply the penalty to the gold from the next move
-    most_next_gold = max(gold_right, gold_down)
-    if current_bandit and most_next_gold != float('-inf'):
-        most_next_gold -= penalty
+                if max_gold_from_above > max_gold_from_left:
+                    dp[i][j] = max_gold_from_above
+                    path[i][j] = path[i - 1][j] + [(i, j)]
+                else:
+                    dp[i][j] = max_gold_from_left
+                    path[i][j] = path[i][j - 1] + [(i, j)]
 
-    # Calculate the total gold for the current cell
-    total_gold = current_gold + most_next_gold
+            # Handle blocked cells ('X'), no action needed
 
-    # Adjust the gold for bandit penalties
-    if current_bandit and total_gold != float('-inf'):
-        next_cell_value = matrix[i + 1][j] if i < n - 1 else matrix[i][j + 1]
-        if isinstance(next_cell_value, int):
-            total_gold -= next_cell_value
+    # Get the path to the bottom-right corner
+    final_path = path[n - 1][n - 1]
 
-    # Store the result in memoization dictionary
-    memo[(i, j, prev_bandit)] = total_gold
+    # Calculate the total gold collected along the path
+    total_gold = calculate_gold(matrix, final_path)
 
-    return total_gold
+    return total_gold, final_path
 
 
 def greedy_collect_gold(matrix):
@@ -186,7 +186,7 @@ def greedy_collect_gold(matrix):
                 if (i, j) not in visited:
                     break
             else:
-                return -1  # No possible path
+                return -1, []  # No possible path
 
             while backtrack_steps_i > 0:
                 path.pop()
@@ -199,5 +199,4 @@ def greedy_collect_gold(matrix):
             if matrix[last_cell[0]][last_cell[1]] == '!':
                 prev_bandit = True
 
-
-    return total_gold
+    return total_gold, path
