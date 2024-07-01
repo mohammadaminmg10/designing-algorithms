@@ -129,12 +129,17 @@ def greedy_collect_gold(matrix):
     visited = set([(i, j)])
     backtrack_steps = []
 
-    def get_gold(i, j, prev_bandit):
-        if matrix[i][j] == 'X':
+    def get_gold(i_new, j_new, prev_bandit, prev_cell=None):
+        if matrix[i_new][j_new] == 'X':
             return float('-inf'), False
-        penalty, current_bandit = handle_bandits(matrix, i, j, prev_bandit)
-        if isinstance(matrix[i][j], int):
-            return matrix[i][j] + (penalty * 2), current_bandit
+        if prev_cell != None:
+            if prev_bandit and matrix[prev_cell[0]][prev_cell[1]] == '!':
+                if isinstance(matrix[i_new][j_new], int):
+                    penalty = 0
+                    return matrix[i_new][j_new] + (penalty * 2), False
+        penalty, current_bandit = handle_bandits(matrix, i_new, j_new, prev_bandit)
+        if isinstance(matrix[i_new][j_new], int):
+            return matrix[i_new][j_new] + (penalty * 2), current_bandit
         return 0, current_bandit
 
     penalty, prev_bandit = handle_bandits(matrix, i, j, prev_bandit)
@@ -148,9 +153,15 @@ def greedy_collect_gold(matrix):
         next_move = None
 
         if i + 1 < n and (i + 1, j) not in visited:
-            down_gold, next_bandit_down = get_gold(i + 1, j, prev_bandit)
+            try:
+                down_gold, next_bandit_down = get_gold(i + 1, j, prev_bandit, prev_cell= path[-2])
+            except:
+                down_gold, next_bandit_down = get_gold(i + 1, j, prev_bandit)
         if j + 1 < n and (i, j + 1) not in visited:
-            right_gold, next_bandit_right = get_gold(i, j + 1, prev_bandit)
+            try:
+                right_gold, next_bandit_right = get_gold(i, j + 1, prev_bandit, prev_cell= path[-2])
+            except:
+                right_gold, next_bandit_right = get_gold(i, j + 1, prev_bandit)
 
         if down_gold > right_gold:
             next_move = (i + 1, j)
