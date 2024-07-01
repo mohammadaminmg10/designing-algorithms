@@ -59,6 +59,9 @@ def calculate_gold(matrix, path):
     prev_bandit = False  # Keeps track if the previous cell had a bandit
 
     for (i, j) in path:
+        # no negative gold allowed
+        if total_gold < 0:
+            total_gold = 0
         if matrix[i][j] == 'X':
             continue
         penalty, prev_bandit = handle_bandits(matrix, i, j, prev_bandit)
