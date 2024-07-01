@@ -28,7 +28,7 @@ class TestGoldCollection(unittest.TestCase):
         self.matrix_4 = [
             [0, 5, 'X', 2, 1],
             [4, '!', 3, 'X', 0],
-            [3, 2, 'X', 1, 2],
+            [3, '!', 'X', 1, 2],
             [1, 2, 3, 4, 5],
             ['X', 0, 1, '!', 3]
         ]
@@ -82,7 +82,7 @@ class TestGoldCollection(unittest.TestCase):
         expected_output_1 = (16, [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3), (3, 3)])
         expected_output_2 = (9, [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3)])
         expected_output_3 = (92, [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)])
-        expected_output_4 = (26, [(0, 0), (1, 0), (2, 0), (2, 1), (3, 1), (3, 2), (3, 3), (3, 4), (4, 4)])
+        expected_output_4 = (25, [(0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (3, 2), (3, 3), (3, 4), (4, 4)])
         expected_output_5 = (53, [(0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (3, 2), (3, 3)])
         expected_output_6 = (0, [])
 
@@ -104,7 +104,7 @@ class TestGoldCollection(unittest.TestCase):
         self.assertEqual(greedy_collect_gold(self.matrix_1), (17, [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (3, 2), (3, 3)]))
         self.assertEqual(greedy_collect_gold(self.matrix_2), (9, [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2), (2, 3), (3, 3)]))
         self.assertEqual(greedy_collect_gold(self.matrix_3), (92, [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]))
-        self.assertEqual(greedy_collect_gold(self.matrix_4), (20, [(0, 0), (0, 1), (1, 1), (2, 1), (3, 1), (3, 2), (3, 3), (3, 4), (4, 4)]))
+        self.assertEqual(greedy_collect_gold(self.matrix_4), (22, [(0, 0), (0, 1), (1, 1), (2, 1), (3, 1), (3, 2), (3, 3), (3, 4), (4, 4)]))
         self.assertEqual(greedy_collect_gold(self.matrix_5), (35, [(0, 0), (0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 3)]))
         self.assertEqual(greedy_collect_gold(self.matrix_6), (-1, []))
 
