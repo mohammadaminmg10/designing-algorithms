@@ -100,45 +100,28 @@ O(n) * O(m) = O(n*m)
 
 The time complexity of the `initialize_matrix` function is O(n*m), where `n` is the number of rows and `m` is the number of columns in the input matrix `matrix_input`.
 
+## Time Complexity Analysis
+
 ### Function: `handle_bandits`
+
+```python
+def handle_bandits(matrix, i, j, prev_bandit):
+    if prev_bandit and isinstance(matrix[i][j], int):
+        return -matrix[i][j], False
+    elif prev_bandit and matrix[i][j] == '!':
+        return 0, False
+    elif not prev_bandit and matrix[i][j] == '!':
+        return 0, True
+
+    return 0, False
+```
 
 ### Analysis
 
-1. **Checking `prev_bandit` and `isinstance`**:
-   ```python
-   if prev_bandit and isinstance(matrix[i][j], int):
-   ```
-   - The check `prev_bandit` is \( O(1) \) since it's a simple boolean evaluation.
-   - The `isinstance(matrix[i][j], int)` function checks if the element at position `[i][j]` is an integer, which is \( O(1) \).
-
-2. **Returning Based on Condition**:
-   ```python
-   return -matrix[i][j], False
-   ```
-   - This return statement is \( O(1) \) since accessing an element in a list and returning a tuple are both \( O(1) \) operations.
-
-3. **Checking Equality**:
-   ```python
-   if matrix[i][j] == '!':
-   ```
-   - The equality check `matrix[i][j] == '!'` is \( O(1) \).
-
-4. **Returning Based on Second Condition**:
-   ```python
-   return 0, True
-   ```
-   - This return statement is \( O(1) \).
-
-5. **Default Return**:
-   ```python
-   return 0, False
-   ```
-   - The default return statement is \( O(1) \).
-
-### Combined Complexity
-
-Each operation in the function is a constant time operation, meaning they all have \( O(1) \) complexity.
-
+- The function `handle_bandits` operates in constant time \( O(1) \) because:
+  - It checks conditions and returns based on them without any iterative or recursive operations.
+  - Each condition check (`if`, `elif`) and return statement is executed in constant time.
+  
 ### Conclusion
 
 The time complexity of the `handle_bandits` function is \( O(1) \).
