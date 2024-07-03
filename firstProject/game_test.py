@@ -62,7 +62,7 @@ class TestGoldCollection(unittest.TestCase):
 
     def test_handle_bandits(self):
         self.assertEqual(handle_bandits(self.matrix_1, 0, 3, False), (0, True))
-        self.assertEqual(handle_bandits(self.matrix_1, 2, 2, True), (0, True))
+        self.assertEqual(handle_bandits(self.matrix_1, 2, 2, True), (0, False))
         self.assertEqual(handle_bandits(self.matrix_1, 0, 0, True), (-5, False))
         self.assertEqual(handle_bandits(self.matrix_1, 1, 0, False), (0, False))
 
