@@ -1,4 +1,3 @@
-
 def initialize_matrix(matrix_input):
     for i, row in enumerate(matrix_input):
         matrix_input[i] = [int(item) if item.isdigit() else item for item in row]
@@ -21,8 +20,11 @@ def handle_bandits(matrix, i, j, prev_bandit):
     """
     if prev_bandit and isinstance(matrix[i][j], int):
         return -matrix[i][j], False
-    if matrix[i][j] == '!':
+    elif prev_bandit and matrix[i][j] == '!':
+        return 0, False
+    elif not prev_bandit and matrix[i][j] == '!':
         return 0, True
+
     return 0, False
 
 
@@ -157,12 +159,12 @@ def greedy_collect_gold(matrix):
 
         if i + 1 < n and (i + 1, j) not in visited:
             try:
-                down_gold, next_bandit_down = get_gold(i + 1, j, prev_bandit, prev_cell= path[-2])
+                down_gold, next_bandit_down = get_gold(i + 1, j, prev_bandit, prev_cell=path[-2])
             except:
                 down_gold, next_bandit_down = get_gold(i + 1, j, prev_bandit)
         if j + 1 < n and (i, j + 1) not in visited:
             try:
-                right_gold, next_bandit_right = get_gold(i, j + 1, prev_bandit, prev_cell= path[-2])
+                right_gold, next_bandit_right = get_gold(i, j + 1, prev_bandit, prev_cell=path[-2])
             except:
                 right_gold, next_bandit_right = get_gold(i, j + 1, prev_bandit)
 
