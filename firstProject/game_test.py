@@ -1,6 +1,6 @@
 import unittest
 
-from game import is_valid_move, handle_bandits, calculate_gold, dynamic_collect_gold, greedy_collect_gold, \
+from game import  handle_bandits, calculate_gold, dynamic_collect_gold, greedy_collect_gold, \
     initialize_matrix
 
 
@@ -65,12 +65,6 @@ class TestGoldCollection(unittest.TestCase):
         self.assertEqual(handle_bandits(self.matrix_1, 2, 2, True), (0, False))
         self.assertEqual(handle_bandits(self.matrix_1, 0, 0, True), (-5, False))
         self.assertEqual(handle_bandits(self.matrix_1, 1, 0, False), (0, False))
-
-    def test_is_valid_move(self):
-        self.assertTrue(is_valid_move(self.matrix_1, 0, 0, -1, -1))
-        self.assertFalse(is_valid_move(self.matrix_1, 0, 1, -1, -1))
-        self.assertFalse(is_valid_move(self.matrix_1, 1, 2, 1, 2))
-        self.assertTrue(is_valid_move(self.matrix_1, 1, 1, 0, 1))
 
     def test_calculate_gold(self):
         path = [(0, 0), (1, 0), (2, 0), (3, 0), (3, 1), (3, 2), (3, 3)]

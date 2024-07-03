@@ -28,24 +28,6 @@ def handle_bandits(matrix, i, j, prev_bandit):
     return 0, False
 
 
-def is_valid_move(matrix, i, j, prev_i, prev_j):
-    """
-    Checks if the move to the given cell is valid.
-
-    Parameters:
-    matrix (list of list of int/str): The n x n matrix.
-    i (int): The row index.
-    j (int): The column index.
-
-    Returns:
-    bool: True if the move is valid, False otherwise.
-    """
-    if (i < 0 or i >= len(matrix) or j < 0 or j >= len(matrix) or matrix[i][j] == 'X' or
-            (prev_i == i and prev_j == j)):
-        return False
-    return True
-
-
 def calculate_gold(matrix, path):
     """
     Calculates the total gold collected along a given path.
